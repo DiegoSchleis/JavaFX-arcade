@@ -16,12 +16,12 @@ public class shit extends Application {
     private static final double W = 800, H = 600;
 
     private static final String HERO_IMAGE_LOC =
-            "http://i.imgur.com/rqpfkpa.png";
+            "http://i.imgur.com/m2oiHVE.png";
 
     private Image heroImage;
     private Node  hero;
 
-    boolean running, goNorth, goSouth, goEast, goWest;
+    boolean running, goNorth, goSouth;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -30,7 +30,7 @@ public class shit extends Application {
 
         Group dungeon = new Group(hero);
 
-        moveHeroTo(W / 2, H / 2);
+        moveHeroTo(50, H / 2);
 
         Scene scene = new Scene(dungeon, W, H, Color.BLACK);
 
@@ -51,8 +51,6 @@ public class shit extends Application {
                 switch (event.getCode()) {
                     case UP:    goNorth = false; break;
                     case DOWN:  goSouth = false; break;
-                    case LEFT:  goWest  = false; break;
-                    case RIGHT: goEast  = false; break;
                     case SHIFT: running = false; break;
                 }
             }
@@ -64,15 +62,13 @@ public class shit extends Application {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                int dx = 0, dy = 0;
+                int d = 0;
 
-                if (goNorth) dy -= 1;
-                if (goSouth) dy += 1;
-                if (goEast)  dx += 1;
-                if (goWest)  dx -= 1;
-                if (running) { dx *= 3; dy *= 3; }
+                if (goNorth) d -= 8;
+                if (goSouth) d += 8;
+                if (running) {d *= 2; }
 
-                moveHeroBy(dx, dy);
+                moveHeroBy(0, d);
             }
         };
         timer.start();

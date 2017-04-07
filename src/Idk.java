@@ -1,41 +1,62 @@
-import java.util.Random;
 import javafx.application.Application;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.shape.Line;
-import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class Idk extends Application {
+	private int pos1 = 50;
     public void start(Stage stage) {
     	stage.setTitle("Test");
         Group root = new Group();
         Scene scene = new Scene(root, 800, 600);
-       
+        
         Line line = new Line();
         line.setStrokeWidth(25);
-        line.setStartX(50); 
-        line.setStartY(50);
+        line.setStartX(pos1); 
+        line.setStartY(pos1);
         line.setEndX(50); 
         line.setEndY(250);
         
-        Circle circle = new Circle();
+        /*Circle circle = new Circle();
         circle.setCenterX(100);
         circle.setCenterY(100);
-        circle.setRadius(15);
+        circle.setRadius(15);*/
+        
+        scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            
+			@Override
+			public void handle(KeyEvent event) {
+				
+				switch(event.getCode()) {
+					
+				case UP:
+					pos1++;
+					break;
+					
+				case DOWN:
+					pos1--;
+					
+					break;
+					
+				default:
+					break;
+				
+				}
+			}
+		});
 
-       stage.setScene(scene); 
+        stage.setScene(scene); 
         stage.sizeToScene(); 
         root.getChildren().add(line);
-        root.getChildren().add(circle);
+        //root.getChildren().add(circle);
         stage.setScene(scene);
         stage.show();
     }
-	    
-	public static String randomNameGenerator() {
+    
+	/*public static String randomNameGenerator() {
 		Random r = new Random();
 		
 		int frstNameParts = 20;
@@ -105,7 +126,7 @@ public class Idk extends Application {
 		lastNameParts1[6] = "Man";
 		lastNameParts1[7] = "Hit";
 		lastNameParts1[8] = "Neg";
-		lastNameParts1[9] = "Dähn";
+		lastNameParts1[9] = "Dï¿½hn";
 		lastNameParts1[10] = "Hite";
 		lastNameParts1[11] = "In";
 		lastNameParts1[12] = "O' U";
@@ -146,7 +167,7 @@ public class Idk extends Application {
 		lastNameParts3[6] = "der";
 		lastNameParts3[7] = "ty";
 		lastNameParts3[8] = "no";
-		lastNameParts3[9] = "ä";
+		lastNameParts3[9] = "ï¿½";
 		lastNameParts3[10] = "zer";
 		lastNameParts3[11] = "ion";
 		lastNameParts3[12] = "y";
@@ -166,10 +187,10 @@ public class Idk extends Application {
 		}
 		
 		return name;
-	}
+	}*/
 	
-	public static void test (String[] args) {
-		Application.launch(args);
-	}
+    public static void main(String[] args) {
+        Application.launch(Idk.class, args);
+    }
 }
 

@@ -13,26 +13,31 @@ import javafx.stage.Stage;
 public class shit extends Application {
 
     private static final double W = 800, H = 600;
-
-    private static final String player_IMAGE_LOC =
-            "http://i.imgur.com/m2oiHVE.png";
+    
+    private static final String player_IMAGE_LOC = "http://i.imgur.com/m2oiHVE.png";
+    private static final String ball_IMAGE_LOC = "http://i.imgur.com/BAUjKsH.png";
 
     private Image playerImage;
+    private Image ballImage;
     private Node  player1;
     private Node  player2;
+    private Node  ball;
 
     boolean goNorth1, goSouth1, goNorth2, goSouth2;
-
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) throws Exception {	
         playerImage = new Image(player_IMAGE_LOC);
+        ballImage = new Image(ball_IMAGE_LOC);
+        
         player1 = new ImageView(playerImage);
         player2 = new ImageView(playerImage);
+        ball = new ImageView(ballImage);
 
-        Group group = new Group(player1, player2);
+        Group group = new Group(player1, player2, ball);
         
         moveplayer1To(50, H / 2);
         moveplayer2To(W-50, H / 2);
+        moveballTo(W/2, H/2);
 
         Scene scene = new Scene(group, W, H, Color.BLACK);
 
@@ -128,6 +133,30 @@ public class shit extends Application {
             player2.relocate(x - cx, y - cy);
         }
     }
+    
+    private void moveballBy(int dx, int dy) {
+        if (dx == 0 && dy == 0) return;
 
+        final double cx = ball.getBoundsInLocal().getWidth()  / 2;
+        final double cy = ball.getBoundsInLocal().getHeight() / 2;
+
+        double x = cx + ball.getLayoutX() + dx;
+        double y = cy + ball.getLayoutY() + dy;
+
+        moveballTo(x, y);
+    }
+
+    private void moveballTo(double x, double y) {
+        final double cx = ball.getBoundsInLocal().getWidth()  / 2;
+        final double cy = ball.getBoundsInLocal().getHeight() / 2;
+
+        if (x - cx >= 0 &&
+            x + cx <= W &&
+            y - cy >= 0 &&
+            y + cy <= H) {
+            ball.relocate(x - cx, y - cy);
+        }
+    }
+    
     public static void main(String[] args) { launch(args); }
 }

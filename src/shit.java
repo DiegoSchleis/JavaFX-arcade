@@ -8,31 +8,33 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 /**
- * Hold down an arrow key to have your hero move around the screen.
- * Hold down the shift key to have the hero run.
+ * Hold down an arrow key to have your player1 move around the screen.
  */
 public class shit extends Application {
 
     private static final double W = 800, H = 600;
 
-    private static final String HERO_IMAGE_LOC =
+    private static final String player_IMAGE_LOC =
             "http://i.imgur.com/m2oiHVE.png";
 
-    private Image heroImage;
-    private Node  hero;
+    private Image playerImage;
+    private Node  player1;
+    private Node  player2;
 
-    boolean running, goNorth, goSouth;
+    boolean goNorth, goSouth;
 
     @Override
     public void start(Stage stage) throws Exception {
-        heroImage = new Image(HERO_IMAGE_LOC);
-        hero = new ImageView(heroImage);
+        playerImage = new Image(player_IMAGE_LOC);
+        player1 = new ImageView(playerImage);
+        player2 = new ImageView(playerImage);
 
-        Group dungeon = new Group(hero);
+        Group group = new Group(player1, player2);
+        
+        moveplayer1To(50, H / 2);
+        moveplayer2To(W-50, H / 2);
 
-        moveHeroTo(50, H / 2);
-
-        Scene scene = new Scene(dungeon, W, H, Color.BLACK);
+        Scene scene = new Scene(group, W, H, Color.BLACK);
 
         scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
             @Override
@@ -40,7 +42,6 @@ public class shit extends Application {
                 switch (event.getCode()) {
                     case UP:    goNorth = true; break;
                     case DOWN:  goSouth = true; break;
-                    case SHIFT: running = true; break;
                 }
             }
         });
@@ -51,7 +52,6 @@ public class shit extends Application {
                 switch (event.getCode()) {
                     case UP:    goNorth = false; break;
                     case DOWN:  goSouth = false; break;
-                    case SHIFT: running = false; break;
                 }
             }
         });
@@ -64,37 +64,60 @@ public class shit extends Application {
             public void handle(long now) {
                 int d = 0;
 
-                if (goNorth) d -= 8;
-                if (goSouth) d += 8;
-                if (running) {d *= 2; }
+                if (goNorth) d -= 10;
+                if (goSouth) d += 10;
 
-                moveHeroBy(0, d);
+                moveplayer1By(0, d);
             }
         };
         timer.start();
     }
 
-    private void moveHeroBy(int dx, int dy) {
+    private void moveplayer1By(int dx, int dy) {
         if (dx == 0 && dy == 0) return;
 
-        final double cx = hero.getBoundsInLocal().getWidth()  / 2;
-        final double cy = hero.getBoundsInLocal().getHeight() / 2;
+        final double cx = player1.getBoundsInLocal().getWidth()  / 2;
+        final double cy = player1.getBoundsInLocal().getHeight() / 2;
 
-        double x = cx + hero.getLayoutX() + dx;
-        double y = cy + hero.getLayoutY() + dy;
+        double x = cx + player1.getLayoutX() + dx;
+        double y = cy + player1.getLayoutY() + dy;
 
-        moveHeroTo(x, y);
+        moveplayer1To(x, y);
     }
 
-    private void moveHeroTo(double x, double y) {
-        final double cx = hero.getBoundsInLocal().getWidth()  / 2;
-        final double cy = hero.getBoundsInLocal().getHeight() / 2;
+    private void moveplayer1To(double x, double y) {
+        final double cx = player1.getBoundsInLocal().getWidth()  / 2;
+        final double cy = player1.getBoundsInLocal().getHeight() / 2;
 
         if (x - cx >= 0 &&
             x + cx <= W &&
             y - cy >= 0 &&
             y + cy <= H) {
-            hero.relocate(x - cx, y - cy);
+            player1.relocate(x - cx, y - cy);
+        }
+    }
+    
+    private void moveplayer2By(int dx, int dy) {
+        if (dx == 0 && dy == 0) return;
+
+        final double cx = player2.getBoundsInLocal().getWidth()  / 2;
+        final double cy = player2.getBoundsInLocal().getHeight() / 2;
+
+        double x = cx + player2.getLayoutX() + dx;
+        double y = cy + player2.getLayoutY() + dy;
+
+        moveplayer2To(x, y);
+    }
+
+    private void moveplayer2To(double x, double y) {
+        final double cx = player2.getBoundsInLocal().getWidth()  / 2;
+        final double cy = player2.getBoundsInLocal().getHeight() / 2;
+
+        if (x - cx >= 0 &&
+            x + cx <= W &&
+            y - cy >= 0 &&
+            y + cy <= H) {
+            player2.relocate(x - cx, y - cy);
         }
     }
 

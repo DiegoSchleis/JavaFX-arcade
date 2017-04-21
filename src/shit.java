@@ -21,7 +21,7 @@ public class shit extends Application {
     private Node  player1;
     private Node  player2;
 
-    boolean goNorth, goSouth;
+    boolean goNorth1, goSouth1, goNorth2, goSouth2;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -40,8 +40,10 @@ public class shit extends Application {
             @Override
             public void handle(KeyEvent event) {
                 switch (event.getCode()) {
-                    case UP:    goNorth = true; break;
-                    case DOWN:  goSouth = true; break;
+                	case W:     goNorth1 = true; break;
+                	case S:  	goSouth1 = true; break;
+                    case UP:    goNorth2 = true; break;
+                    case DOWN:  goSouth2 = true; break;
                 }
             }
         });
@@ -50,8 +52,10 @@ public class shit extends Application {
             @Override
             public void handle(KeyEvent event) {
                 switch (event.getCode()) {
-                    case UP:    goNorth = false; break;
-                    case DOWN:  goSouth = false; break;
+                	case W:     goNorth1 = false; break;
+                	case S:  	goSouth1 = false; break;
+                	case UP:    goNorth2 = false; break;
+                	case DOWN:  goSouth2 = false; break;
                 }
             }
         });
@@ -63,11 +67,15 @@ public class shit extends Application {
             @Override
             public void handle(long now) {
                 int d = 0;
+                int e = 0;
 
-                if (goNorth) d -= 10;
-                if (goSouth) d += 10;
+                if (goNorth1) d -= 10;
+                if (goSouth1) d += 10;
+                if (goNorth2) e -= 10;
+                if (goSouth2) e += 10;
 
                 moveplayer1By(0, d);
+                moveplayer2By(0, e);
             }
         };
         timer.start();

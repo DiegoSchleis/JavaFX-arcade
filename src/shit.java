@@ -1,4 +1,3 @@
-import org.omg.CORBA.Bounds;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -11,9 +10,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
-/**
- * Hold down an arrow key to have your player1 move around the screen.
- */
 public class shit extends Application {
 
 	private static final double W = 800, H = 600;
@@ -33,6 +29,9 @@ public class shit extends Application {
 	private Node start;
 	private double deltaX, deltaY;
 	private double v;
+	private boolean cap;
+	private boolean press = false;
+    private long createdMillis = System.currentTimeMillis();
 
 	boolean goNorth1, goSouth1, goNorth2, goSouth2, moving;
 
@@ -51,36 +50,57 @@ public class shit extends Application {
 
 		Group group = new Group(player1, player2, ball, line, start);
 
-		moveplayer1To(50, H / 2);
-		moveplayer2To(W - 50, H / 2);
+		moveplayer1To(50, H/2);
+		moveplayer2To(W-50, H/2);
 		moveballTo(W/2, H/2);
-		movelineTo(W / 2, H / 2);
-		movestartTo(W / 2, H / 2);
+		movelineTo(W/2, H/2);
+		movestartTo(W/2, H/2);
 
 		Scene scene = new Scene(group, W, H, Color.BLACK);
 
 		scene.setOnKeyPressed(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {
-				switch (event.getCode()) {
-				case W:
-					goNorth1 = true;
-					break;
-				case S:
-					goSouth1 = true;
-					break;
-				case UP:
-					goNorth2 = true;
-					break;
-				case DOWN:
-					goSouth2 = true;
-					break;
-				case SPACE:
-					moving = true;
-					deltaX = 1;
-					deltaY = 1;
-					v = 5;
-					break;
+				if(timeout() >= 350) {
+					switch (event.getCode()) {
+						case W:
+							goNorth1 = true;
+							if(press == false) {
+								start();
+								press = true;
+							}
+							break;
+							
+						case S:
+							goSouth1 = true;
+							if(press == false) {
+								start();
+								press = true;
+							}
+							break;
+							
+						case UP:
+							goNorth2 = true;
+							if(press == false) {
+								start();
+								press = true;
+							}
+							break;
+							
+							case DOWN:
+								goSouth2 = true;
+								if(press == false) {
+									start();
+									press = true;
+								}
+								break;
+								
+							default:
+								if(press == false) {
+									start();
+									press = true;
+								}
+					}
 				}
 			}
 		});
@@ -126,15 +146,53 @@ public class shit extends Application {
 					if(ball.getBoundsInParent().getMaxY() >= H-v || ball.getBoundsInParent().getMinY() <= v) {
 						deltaY *= -1;
 						v *= 1.01;
-					} else if(ball.getBoundsInParent().getMaxX() >= W-v || ball.getBoundsInParent().getMinX() <= v) {
+					}
+					
+					if(ball.getBoundsInParent().getMaxX() >= W-v || ball.getBoundsInParent().getMinX() <= v) {
 						deltaX *= -1;
-						v *= 1.01;
-					} else if(ball.getBoundsInParent().getMinX() <= 50 && player1.getBoundsInParent().getMaxY() > ball.getBoundsInParent().getMaxY() && player1.getBoundsInParent().getMinY() < ball.getBoundsInParent().getMinY()) {
+						if(cap == false) {
+							v *= 1.01;
+						}
+					}
+					
+					if(ball.getBoundsInParent().getMinX() <= 50 && player1.getBoundsInParent().getMaxY() > ball.getBoundsInParent().getMaxY() && player1.getBoundsInParent().getMinY() < ball.getBoundsInParent().getMinY()) {
 						deltaX *= -1;
-						v *= 1.01;
-					} else if(ball.getBoundsInParent().getMaxX() >= W-50 && player2.getBoundsInParent().getMaxY() > ball.getBoundsInParent().getMaxY() && player2.getBoundsInParent().getMinY() < ball.getBoundsInParent().getMinY()) {
+						if(cap == false) {
+							v *= 1.01;
+						}
+					}
+					
+					if(ball.getBoundsInParent().getMaxX() >= W-50 && player2.getBoundsInParent().getMaxY() > ball.getBoundsInParent().getMaxY() && player2.getBoundsInParent().getMinY() < ball.getBoundsInParent().getMinY()) {
 						deltaX *= -1;
-						v *= 1.01;
+						if(cap == false) {
+							v *= 1.01;
+						}
+					}
+					
+					if(ball.getBoundsInParent().getMinX() < v) {
+						createdMillis = System.currentTimeMillis();
+						moving = false;
+						press = false;
+						moveballTo(W/2, H/2);
+						moveplayer1To(50, H/2);
+						moveplayer2To(W-50, H/2);
+						deltaX=0;
+						deltaY=0;
+					}
+					
+					if(ball.getBoundsInParent().getMaxX() > W-v) {
+						createdMillis = System.currentTimeMillis();
+						moving = false;
+						press = false;
+						moveballTo(W/2, H/2);
+						moveplayer1To(50, H/2);
+						moveplayer2To(W-50, H/2);
+						deltaX=0;
+						deltaY=0;
+					}
+					
+					if(v >= 50) {
+						cap = true;
 					}
 				}
 				
@@ -145,6 +203,19 @@ public class shit extends Application {
 		};
 		timer.start();
 	}
+	
+	private void start() {
+		moving = true;
+		deltaX = 1;
+		deltaY = 1;
+		v = 5;
+		cap = false;
+	}
+	
+    public int timeout() {
+        long nowMillis = System.currentTimeMillis();
+        return (int)(nowMillis - this.createdMillis);
+    }
 
 	private void moveplayer1By(int dx, int dy) {
 		if (dx == 0 && dy == 0)

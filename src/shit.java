@@ -1,3 +1,4 @@
+import org.omg.CORBA.Bounds;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.event.EventHandler;
@@ -30,13 +31,13 @@ public class shit extends Application {
 	private Node ball;
 	private Node line;
 	private Node start;
-	private Stage eh;
+	private double deltaX, deltaY;
+	private double v;
 
-	boolean goNorth1, goSouth1, goNorth2, goSouth2;
+	boolean goNorth1, goSouth1, goNorth2, goSouth2, moving;
 
 	@Override
 	public void start(Stage stage) throws Exception {
-		eh = stage;
 		playerImage = new Image(player_IMAGE_LOC);
 		ballImage = new Image(ball_IMAGE_LOC);
 		lineImage = new Image(line_IMAGE_LOC);
@@ -52,7 +53,7 @@ public class shit extends Application {
 
 		moveplayer1To(50, H / 2);
 		moveplayer2To(W - 50, H / 2);
-		moveballTo(W / 2, H / 2);
+		moveballTo(W/2, H/2);
 		movelineTo(W / 2, H / 2);
 		movestartTo(W / 2, H / 2);
 
@@ -73,6 +74,12 @@ public class shit extends Application {
 					break;
 				case DOWN:
 					goSouth2 = true;
+					break;
+				case SPACE:
+					moving = true;
+					deltaX = 1;
+					deltaY = 1;
+					v = 5;
 					break;
 				}
 			}
@@ -102,11 +109,11 @@ public class shit extends Application {
 		stage.show();
 
 		AnimationTimer timer = new AnimationTimer() {
-			@Override
+			
 			public void handle(long now) {
 				int d = 0;
 				int e = 0;
-
+				
 				if (goNorth1)
 					d -= 10;
 				if (goSouth1)
@@ -115,29 +122,28 @@ public class shit extends Application {
 					e -= 10;
 				if (goSouth2)
 					e += 10;
-
+				if (moving) {
+					if(ball.getBoundsInParent().getMaxY() >= H-v || ball.getBoundsInParent().getMinY() <= v) {
+						deltaY *= -1;
+						v *= 1.01;
+					} else if(ball.getBoundsInParent().getMaxX() >= W-v || ball.getBoundsInParent().getMinX() <= v) {
+						deltaX *= -1;
+						v *= 1.01;
+					} else if(ball.getBoundsInParent().getMinX() <= 50 && player1.getBoundsInParent().getMaxY() > ball.getBoundsInParent().getMaxY() && player1.getBoundsInParent().getMinY() < ball.getBoundsInParent().getMinY()) {
+						deltaX *= -1;
+						v *= 1.01;
+					} else if(ball.getBoundsInParent().getMaxX() >= W-50 && player2.getBoundsInParent().getMaxY() > ball.getBoundsInParent().getMaxY() && player2.getBoundsInParent().getMinY() < ball.getBoundsInParent().getMinY()) {
+						deltaX *= -1;
+						v *= 1.01;
+					}
+				}
+				
 				moveplayer1By(0, d);
 				moveplayer2By(0, e);
+				moveballBy(deltaX * v, deltaY * v);
 			}
 		};
 		timer.start();
-	}
-
-	public void initShot(double movX, double movY) throws InterruptedException {
-		boolean shoot = true;
-		double moveX = movX;
-		double moveY = movY;
-		while (shoot) {
-			ball.translateXProperty().set(moveX);
-			ball.translateYProperty().set(moveY);
-			if (ball.getBoundsInParent().intersects(player1.getBoundsInParent()) || ball.getBoundsInParent().intersects(player2.getBoundsInParent())) {
-				moveX *= -1;
-			} else if (ball.getBoundsInParent().getMaxY() >= eh.getHeight() || ball.getBoundsInParent().getMinY() <= 0) {
-				moveY *= -1;
-			}
-
-			Thread.sleep(30);
-		}
 	}
 
 	private void moveplayer1By(int dx, int dy) {
@@ -184,7 +190,7 @@ public class shit extends Application {
 		}
 	}
 
-	private void moveballBy(int dx, int dy) {
+	private void moveballBy(double dx, double dy) {
 		if (dx == 0 && dy == 0)
 			return;
 
@@ -193,7 +199,7 @@ public class shit extends Application {
 
 		double x = cx + ball.getLayoutX() + dx;
 		double y = cy + ball.getLayoutY() + dy;
-
+		
 		moveballTo(x, y);
 	}
 
@@ -253,4 +259,5 @@ public class shit extends Application {
 	public static void main(String[] args) {
 		launch(args);
 	}
+	
 }

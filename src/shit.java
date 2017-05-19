@@ -29,6 +29,8 @@ public class shit extends Application {
 	private Node start;
 	private double deltaX, deltaY;
 	private double v;
+	private double angle;
+	private double pos;
 	private boolean cap;
 	private boolean press = false;
     private long createdMillis = System.currentTimeMillis();
@@ -143,29 +145,50 @@ public class shit extends Application {
 				if (goSouth2)
 					e += 10;
 				if (moving) {
-					if(ball.getBoundsInParent().getMaxY() >= H-v || ball.getBoundsInParent().getMinY() <= v) {
+					if(ball.getBoundsInParent().getMaxY() >= H-v-Math.sqrt(angle*angle)-Math.sqrt(pos*pos) || ball.getBoundsInParent().getMinY() <= v+Math.sqrt(angle*angle)+Math.sqrt(pos*pos)) {
 						deltaY *= -1;
-						v *= 1.01;
+						angle *= -1;
+						pos *= -1;
+						if(cap == false) {
+							v *= 1.001;
+						}
 					}
 					
 					if(ball.getBoundsInParent().getMaxX() >= W-v || ball.getBoundsInParent().getMinX() <= v) {
 						deltaX *= -1;
+						angle *= -1;
+						pos *= -1;
 						if(cap == false) {
-							v *= 1.01;
+							v *= 1.001;
 						}
 					}
 					
 					if(ball.getBoundsInParent().getMinX() <= 50 && player1.getBoundsInParent().getMaxY() > ball.getBoundsInParent().getMaxY() && player1.getBoundsInParent().getMinY() < ball.getBoundsInParent().getMinY()) {
+						if((player1.getBoundsInParent().getMaxY() - ball.getBoundsInParent().getMaxY()) <= (ball.getBoundsInParent().getMinY() - player1.getBoundsInParent().getMinY())) {
+							if((player1.getBoundsInParent().getMaxY() - ball.getBoundsInParent().getMaxY()) <= ((ball.getBoundsInParent().getMinY() - player1.getBoundsInParent().getMinY() / 2))) {
+								pos -= 10;
+							} else {
+								pos -= 1;
+							}
+						} else {
+							if(((player1.getBoundsInParent().getMaxY() - ball.getBoundsInParent().getMaxY()) / 2) <= (ball.getBoundsInParent().getMinY() - player1.getBoundsInParent().getMinY())) {
+								pos += 1;
+							} else {
+								pos += 10;
+							}
+						}
+						angle += d/10;
 						deltaX *= -1;
 						if(cap == false) {
-							v *= 1.01;
+							v *= 1.001;
 						}
 					}
 					
 					if(ball.getBoundsInParent().getMaxX() >= W-50 && player2.getBoundsInParent().getMaxY() > ball.getBoundsInParent().getMaxY() && player2.getBoundsInParent().getMinY() < ball.getBoundsInParent().getMinY()) {
+						angle += e/10;
 						deltaX *= -1;
 						if(cap == false) {
-							v *= 1.01;
+							v *= 1.001;
 						}
 					}
 					
@@ -178,6 +201,8 @@ public class shit extends Application {
 						moveplayer2To(W-50, H/2);
 						deltaX=0;
 						deltaY=0;
+						angle = 0;
+						pos = 0;
 					}
 					
 					if(ball.getBoundsInParent().getMaxX() > W-v) {
@@ -189,6 +214,8 @@ public class shit extends Application {
 						moveplayer2To(W-50, H/2);
 						deltaX=0;
 						deltaY=0;
+						angle = 0;
+						pos = 0;
 					}
 					
 					if(v >= 50) {
@@ -198,7 +225,7 @@ public class shit extends Application {
 				
 				moveplayer1By(0, d);
 				moveplayer2By(0, e);
-				moveballBy(deltaX * v, deltaY * v);
+				moveballBy(deltaX * v, deltaY * v + angle + pos);
 			}
 		};
 		timer.start();
@@ -209,6 +236,8 @@ public class shit extends Application {
 		deltaX = 1;
 		deltaY = 1;
 		v = 5;
+		angle = 0;
+		pos = 0;
 		cap = false;
 	}
 	
